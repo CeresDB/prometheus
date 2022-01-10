@@ -93,3 +93,11 @@ bench_tsdb: $(PROMU)
 	@$(GO) tool pprof --alloc_space -svg $(PROMTOOL) $(TSDB_BENCHMARK_OUTPUT_DIR)/mem.prof > $(TSDB_BENCHMARK_OUTPUT_DIR)/memprof.alloc.svg
 	@$(GO) tool pprof -svg $(PROMTOOL) $(TSDB_BENCHMARK_OUTPUT_DIR)/block.prof > $(TSDB_BENCHMARK_OUTPUT_DIR)/blockprof.svg
 	@$(GO) tool pprof -svg $(PROMTOOL) $(TSDB_BENCHMARK_OUTPUT_DIR)/mutex.prof > $(TSDB_BENCHMARK_OUTPUT_DIR)/mutexprof.svg
+
+.PHONY: promql_test
+promql_test:
+	go clean -testcache && go test -v ./promql -run TestEvaluations
+
+.PHONY: ceresdb_lint
+ceresdb_lint:
+	golangci-lint -v run storage/remote/ceresdb web/api/v1

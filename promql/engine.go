@@ -774,16 +774,39 @@ func (ng *Engine) populateSeries(querier storage.Querier, s *parser.EvalStmt) {
 		switch n := node.(type) {
 		case *parser.VectorSelector:
 			start, end := ng.getTimeRangesForSelector(s, n, path, evalRange)
-			hints := &storage.SelectHints{
-				Start: start,
-				End:   end,
-				Step:  durationMilliseconds(s.Interval),
-				Range: durationMilliseconds(evalRange),
-				Func:  extractFuncFromPath(path),
+			pdHelper := pushdownHelper{
+				start:       start,
+				end:         end,
+				step:        durationMilliseconds(s.Interval),
+				series:      &n.Series,
+				matchers:    n.LabelMatchers,
+				alignStart:  timestamp.FromTime(s.Start),
+				alignEnd:    timestamp.FromTime(s.End),
+				offset:      durationMilliseconds(n.OriginalOffset),
+				matrixRange: durationMilliseconds(evalRange),
+				path:        path,
 			}
+			metric, pdExpr, err := pdHelper.toExpr()
+			if err != nil {
+				return err
+			}
+
+			hints := &storage.SelectHints{
+				Start:        start,
+				End:          end,
+				Step:         durationMilliseconds(s.Interval),
+				Range:        durationMilliseconds(evalRange),
+				Func:         extractFuncFromPath(path),
+				PushdownExpr: pdExpr,
+				Metric:       metric,
+			}
+
 			evalRange = 0
 			hints.By, hints.Grouping = extractGroupsFromPath(path)
 			n.UnexpandedSeriesSet = querier.Select(false, hints, n.LabelMatchers...)
+			if _, err := checkAndExpandSeriesSet(context.TODO(), n); err != nil {
+				return err
+			}
 
 		case *parser.MatrixSelector:
 			evalRange = n.Range
@@ -1169,6 +1192,10 @@ func (ev *evaluator) eval(expr parser.Expr) (parser.Value, storage.Warnings) {
 
 	switch e := expr.(type) {
 	case *parser.AggregateExpr:
+		if e.Pushdown {
+			return series2matrix(*e.Series), nil
+		}
+
 		// Grouping labels must be sorted (expected both by generateGroupingKey() and aggregation()).
 		sortedGrouping := e.Grouping
 		sort.Strings(sortedGrouping)
@@ -1197,6 +1224,9 @@ func (ev *evaluator) eval(expr parser.Expr) (parser.Value, storage.Warnings) {
 		}, e.Param, e.Expr)
 
 	case *parser.Call:
+		if e.Pushdown {
+			return series2matrix(*e.Series), nil
+		}
 		call := FunctionCalls[e.Func.Name]
 		if e.Func.Name == "timestamp" {
 			// Matrix evaluation always returns the evaluation time,

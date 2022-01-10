@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/CeresDB/ceresdbproto/go/ceresdbproto"
 	"github.com/prometheus/prometheus/model/exemplar"
 	"github.com/prometheus/prometheus/model/labels"
 	"github.com/prometheus/prometheus/tsdb/chunkenc"
@@ -155,6 +156,10 @@ type SelectHints struct {
 	// When disabled, the result may contain samples outside the queried time range but Select() performances
 	// may be improved.
 	DisableTrimming bool
+
+	// PushdownExpr/Metric required by CeresDB
+	PushdownExpr *ceresdbproto.Expr
+	Metric       string
 }
 
 // TODO(bwplotka): Move to promql/engine_test.go?

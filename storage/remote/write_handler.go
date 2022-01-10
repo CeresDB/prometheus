@@ -16,6 +16,7 @@ package remote
 import (
 	"context"
 	"fmt"
+	stdLog "log"
 	"net/http"
 
 	"github.com/go-kit/log"
@@ -25,6 +26,7 @@ import (
 	"github.com/prometheus/prometheus/model/exemplar"
 	"github.com/prometheus/prometheus/prompb"
 	"github.com/prometheus/prometheus/storage"
+	"github.com/prometheus/prometheus/storage/remote/ceresdb"
 )
 
 type writeHandler struct {
@@ -81,6 +83,10 @@ func (h *writeHandler) checkAppendExemplarError(err error, e exemplar.Exemplar, 
 }
 
 func (h *writeHandler) write(ctx context.Context, req *prompb.WriteRequest) (err error) {
+	if ceresdb.HackRemoteWrite {
+		return h.writeToCeresdb(ctx, req)
+	}
+
 	outOfOrderExemplarErrs := 0
 
 	app := h.appendable.Appender(ctx)
@@ -120,4 +126,49 @@ func (h *writeHandler) write(ctx context.Context, req *prompb.WriteRequest) (err
 	}
 
 	return nil
+}
+
+// Hack by CeresDB
+var ceresdbWriter *ceresdb.Writer
+
+func init() {
+	client, err := ceresdb.NewClient(ceresdb.GrpcAddr)
+	if err != nil {
+		stdLog.Fatalf("init ceresdb grpc client failed, err:%v", err)
+	}
+
+	writer, err := ceresdb.NewWriter(client)
+	if err != nil {
+		stdLog.Fatalf("init ceresdb writer failed, err:%v", err)
+	}
+
+	ceresdbWriter = writer
+}
+
+const nameLabel = "__name__"
+
+func (h *writeHandler) writeToCeresdb(ctx context.Context, req *prompb.WriteRequest) error {
+	var points []ceresdb.Point
+	for _, ts := range req.Timeseries {
+		labels := labelProtosToLabels(ts.Labels)
+		tags := labels.Map()
+		metric := tags[nameLabel]
+		delete(tags, nameLabel)
+		for _, s := range ts.Samples {
+			points = append(points, ceresdb.Point{
+				Metric:    metric,
+				Tags:      tags,
+				Timestamp: s.Timestamp,
+				Fields: map[string]float64{
+					"value": s.Value,
+				},
+			})
+		}
+	}
+	if ceresdb.EnableDebug {
+		stdLog.Printf("remote write to ceresdb, points:%+v\n", points)
+	}
+
+	_, err := ceresdbWriter.Write(ctx, points)
+	return err
 }

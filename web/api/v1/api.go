@@ -75,6 +75,7 @@ const (
 	errorNotFound    errorType = "not_found"
 )
 
+// LocalhostRepresentations is list of localhost
 var LocalhostRepresentations = []string{"127.0.0.1", "localhost", "::1"}
 
 type apiError struct {
@@ -300,6 +301,7 @@ func (api *API) Register(r *route.Router) {
 	r.Post("/query_range", wrapAgent(api.queryRange))
 	r.Get("/query_exemplars", wrapAgent(api.queryExemplars))
 	r.Post("/query_exemplars", wrapAgent(api.queryExemplars))
+	r.Post("/ceresdb_write", wrapAgent(api.ceresdbWrite))
 
 	r.Get("/labels", wrapAgent(api.labelNames))
 	r.Post("/labels", wrapAgent(api.labelNames))

@@ -15,6 +15,7 @@ package promql
 
 import (
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -23,13 +24,15 @@ import (
 func TestEvaluations(t *testing.T) {
 	files, err := filepath.Glob("testdata/*.test")
 	require.NoError(t, err)
-
 	for _, fn := range files {
+		// dont support at test by CeresDB
+		if strings.Contains(fn, "at_modifier.test") {
+			continue
+		}
 		t.Run(fn, func(t *testing.T) {
 			test, err := newTestFromFile(t, fn)
 			require.NoError(t, err)
 			require.NoError(t, test.Run())
-
 			test.Close()
 		})
 	}

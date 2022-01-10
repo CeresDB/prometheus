@@ -90,6 +90,10 @@ type AggregateExpr struct {
 	Grouping []string // The labels by which to group the Vector.
 	Without  bool     // Whether to drop the given labels rather than keep them.
 	PosRange PositionRange
+
+	// Add for func pushdown required by CeresDB
+	Pushdown bool
+	Series   *[]storage.Series
 }
 
 // BinaryExpr represents a binary expression between two child expressions.
@@ -111,6 +115,10 @@ type Call struct {
 	Args Expressions // Arguments used in the call.
 
 	PosRange PositionRange
+
+	// Add for func pushdown required by CeresDB
+	Pushdown bool
+	Series   *[]storage.Series
 }
 
 // MatrixSelector represents a Matrix selection.

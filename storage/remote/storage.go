@@ -30,6 +30,7 @@ import (
 	"github.com/prometheus/prometheus/model/labels"
 	"github.com/prometheus/prometheus/scrape"
 	"github.com/prometheus/prometheus/storage"
+	"github.com/prometheus/prometheus/storage/remote/ceresdb"
 	"github.com/prometheus/prometheus/util/logging"
 )
 
@@ -87,7 +88,14 @@ func (s *Storage) ApplyConfig(conf *config.Config) error {
 
 	// Update read clients
 	readHashes := make(map[string]struct{})
-	queryables := make([]storage.SampleAndChunkQueryable, 0, len(conf.RemoteReadConfigs))
+	// HACK, insert CeresDB here
+	queryables := make([]storage.SampleAndChunkQueryable, 0, len(conf.RemoteReadConfigs)+1)
+	ceresdbQueryable, err := ceresdb.NewQueryable()
+	if err != nil {
+		return err
+	}
+	queryables = append(queryables, ceresdbQueryable)
+
 	for _, rrConf := range conf.RemoteReadConfigs {
 		hash, err := toHash(rrConf)
 		if err != nil {

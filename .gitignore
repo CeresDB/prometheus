@@ -2,6 +2,7 @@
 .#*
 /*.yaml
 /*.yml
+!.aci.yml
 *.exe
 
 /prometheus
