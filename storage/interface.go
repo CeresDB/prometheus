@@ -18,7 +18,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/CeresDB/ceresdbproto/go/ceresdbproto"
+	"github.com/CeresDB/ceresdbproto/pkg/ceresprompb"
 	"github.com/prometheus/prometheus/model/exemplar"
 	"github.com/prometheus/prometheus/model/labels"
 	"github.com/prometheus/prometheus/tsdb/chunkenc"
@@ -158,7 +158,7 @@ type SelectHints struct {
 	DisableTrimming bool
 
 	// PushdownExpr/Metric required by CeresDB
-	PushdownExpr *ceresdbproto.Expr
+	PushdownExpr *ceresprompb.Expr
 	Metric       string
 }
 

@@ -5,8 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/CeresDB/ceresdbproto/go/ceresdbproto"
-
+	"github.com/CeresDB/ceresdbproto/pkg/ceresprompb"
 	"github.com/prometheus/prometheus/model/labels"
 	"github.com/prometheus/prometheus/storage"
 	"github.com/prometheus/prometheus/tsdb/chunkenc"
@@ -16,8 +15,8 @@ import (
 type ceresdbSeries struct {
 	// ceresdb doesn't save Metric in __name__ label
 	Metric  string
-	Tags    []*ceresdbproto.Label
-	Samples []*ceresdbproto.Sample
+	Tags    []*ceresprompb.Label
+	Samples []*ceresprompb.Sample
 }
 
 func (c *ceresdbSeries) String() string {

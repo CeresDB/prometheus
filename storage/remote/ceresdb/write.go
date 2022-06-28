@@ -3,9 +3,9 @@ package ceresdb
 import (
 	"context"
 	"errors"
+	"github.com/CeresDB/ceresdbproto/pkg/storagepb"
 	"os"
 
-	"github.com/CeresDB/ceresdbproto/go/ceresdbproto"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 )
@@ -102,35 +102,35 @@ func (vs *values) add(v columnValue) {
 	vs.values = append(vs.values, v)
 }
 
-func (vs *values) toPbWriteEntry() []*ceresdbproto.WriteEntry {
-	pbWriteEntries := make([]*ceresdbproto.WriteEntry, 0, len(vs.values))
+func (vs *values) toPbWriteEntry() []*storagepb.WriteEntry {
+	pbWriteEntries := make([]*storagepb.WriteEntry, 0, len(vs.values))
 	for _, cv := range vs.values {
-		pbFields := make([]*ceresdbproto.Field, 0, len(cv.fields))
+		pbFields := make([]*storagepb.Field, 0, len(cv.fields))
 		for idx, field := range cv.fields {
-			pbFields = append(pbFields, &ceresdbproto.Field{
+			pbFields = append(pbFields, &storagepb.Field{
 				NameIndex: uint32(idx),
-				Value: &ceresdbproto.Value{
-					Value: &ceresdbproto.Value_Float64Value{
+				Value: &storagepb.Value{
+					Value: &storagepb.Value_Float64Value{
 						Float64Value: field,
 					},
 				},
 			})
 		}
-		pbTags := make([]*ceresdbproto.Tag, 0, len(cv.tags))
+		pbTags := make([]*storagepb.Tag, 0, len(cv.tags))
 		for idx, tagValue := range cv.tags {
-			pbTags = append(pbTags, &ceresdbproto.Tag{
+			pbTags = append(pbTags, &storagepb.Tag{
 				NameIndex: uint32(idx),
-				Value: &ceresdbproto.Value{
-					Value: &ceresdbproto.Value_StringValue{
+				Value: &storagepb.Value{
+					Value: &storagepb.Value_StringValue{
 						StringValue: tagValue,
 					},
 				},
 			})
 		}
 
-		pbWriteEntries = append(pbWriteEntries, &ceresdbproto.WriteEntry{
+		pbWriteEntries = append(pbWriteEntries, &storagepb.WriteEntry{
 			Tags: pbTags,
-			FieldGroups: []*ceresdbproto.FieldGroup{
+			FieldGroups: []*storagepb.FieldGroup{
 				{
 					Timestamp: cv.timestamp,
 					Fields:    pbFields,
@@ -146,7 +146,7 @@ type writeRequest struct {
 	points []Point
 }
 
-func (wr writeRequest) toPb() *ceresdbproto.WriteRequest {
+func (wr writeRequest) toPb() *storagepb.WriteRequest {
 	metricColumns := make(map[string]*columns)
 	for _, p := range wr.points {
 		var columns *columns
@@ -191,9 +191,9 @@ func (wr writeRequest) toPb() *ceresdbproto.WriteRequest {
 
 	}
 
-	pbRequest := &ceresdbproto.WriteRequest{}
+	pbRequest := &storagepb.WriteRequest{}
 	for metric, columns := range metricColumns {
-		wm := &ceresdbproto.WriteMetric{
+		wm := &storagepb.WriteMetric{
 			Metric:     metric,
 			TagNames:   columns.tagKeys(),
 			FieldNames: columns.fieldNames(),

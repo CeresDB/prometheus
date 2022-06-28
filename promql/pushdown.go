@@ -3,7 +3,7 @@ package promql
 import (
 	"log"
 
-	"github.com/CeresDB/ceresdbproto/go/ceresdbproto"
+	"github.com/CeresDB/ceresdbproto/pkg/ceresprompb"
 	"github.com/prometheus/prometheus/model/labels"
 	"github.com/prometheus/prometheus/promql/parser"
 	"github.com/prometheus/prometheus/storage"
@@ -39,7 +39,7 @@ func normalizeMatchers(matchers []*labels.Matcher) ([]*labels.Matcher, bool) {
 	return ms, pushdownEnabled
 }
 
-func (ph pushdownHelper) toExpr() (string, *ceresdbproto.Expr, error) {
+func (ph pushdownHelper) toExpr() (string, *ceresprompb.Expr, error) {
 	matchers, pushdownEnabled := normalizeMatchers(ph.matchers)
 	qm, err := ceresdb.QueryParamFrom(matchers)
 	if err != nil {
@@ -50,11 +50,11 @@ func (ph pushdownHelper) toExpr() (string, *ceresdbproto.Expr, error) {
 	if step == 0 {
 		step = 1
 	}
-	baseExpr := &ceresdbproto.Expr{
-		Node: &ceresdbproto.Expr_Operand{
-			Operand: &ceresdbproto.Operand{
-				Value: &ceresdbproto.Operand_Selector{
-					Selector: &ceresdbproto.Selector{
+	baseExpr := &ceresprompb.Expr{
+		Node: &ceresprompb.Expr_Operand{
+			Operand: &ceresprompb.Operand{
+				Value: &ceresprompb.Operand_Selector{
+					Selector: &ceresprompb.Selector{
 						Measurement: qm.Metric,
 						Filters:     qm.Filters,
 						Start:       ph.start,
