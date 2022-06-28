@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/CeresDB/ceresdbproto/pkg/ceresprompb"
 	"log"
 
+	"github.com/CeresDB/ceresdbproto/pkg/ceresprompb"
 	"github.com/prometheus/prometheus/model/labels"
 	"github.com/prometheus/prometheus/storage"
 )

@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"github.com/CeresDB/ceresdbproto/pkg/ceresprompb"
 	"log"
 
+	"github.com/CeresDB/ceresdbproto/pkg/ceresprompb"
 	"github.com/prometheus/prometheus/storage"
 	"github.com/prometheus/prometheus/storage/remote/ceresdb"
 )

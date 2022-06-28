@@ -3,9 +3,8 @@ package ceresdb
 import (
 	"fmt"
 
-	"github.com/pkg/errors"
-
 	"github.com/CeresDB/ceresdbproto/pkg/ceresprompb"
+	"github.com/pkg/errors"
 	"github.com/prometheus/prometheus/model/labels"
 )
 

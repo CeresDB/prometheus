@@ -3,9 +3,9 @@ package ceresdb
 import (
 	"context"
 	"errors"
-	"github.com/CeresDB/ceresdbproto/pkg/storagepb"
 	"os"
 
+	"github.com/CeresDB/ceresdbproto/pkg/storagepb"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 )
