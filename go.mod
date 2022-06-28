@@ -8,7 +8,7 @@ require (
 	github.com/Azure/go-autorest/autorest/adal v0.9.17
 	github.com/Azure/go-autorest/autorest/to v0.4.0 // indirect
 	github.com/Azure/go-autorest/autorest/validation v0.3.1 // indirect
-	github.com/CeresDB/ceresdbproto v0.0.0
+	github.com/CeresDB/ceresdbproto v0.0.0-20220628102323-cbfd0135a531
 	github.com/alecthomas/units v0.0.0-20210927113745-59d0afb8317a
 	github.com/aws/aws-sdk-go v1.42.16
 	github.com/cespare/xxhash/v2 v2.1.2
@@ -119,5 +119,3 @@ exclude (
 	k8s.io/client-go v9.0.0+incompatible
 	k8s.io/client-go v9.0.0-invalid+incompatible
 )
-
-replace github.com/CeresDB/ceresdbproto v0.0.0 => github.com/chunshao90/ceresdbproto v0.0.0-20220628094241-99a382aead69
