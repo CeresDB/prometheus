@@ -3,9 +3,8 @@ package ceresdb
 import (
 	"fmt"
 
-	"github.com/CeresDB/ceresdbproto/go/ceresdbproto"
+	"github.com/CeresDB/ceresdbproto/pkg/ceresprompb"
 	"github.com/pkg/errors"
-
 	"github.com/prometheus/prometheus/model/labels"
 )
 
@@ -26,14 +25,14 @@ func parseLiteralOrRegularExpr(x string) ([]string, bool) {
 type QueryParam struct {
 	Metric  string
 	Field   string
-	Filters []*ceresdbproto.Filter
+	Filters []*ceresprompb.Filter
 }
 
 func QueryParamFrom(matchers []*labels.Matcher) (QueryParam, error) {
 	param := QueryParam{
 		Metric:  "",
 		Field:   DefaultField,
-		Filters: make([]*ceresdbproto.Filter, 0, len(matchers)-1),
+		Filters: make([]*ceresprompb.Filter, 0, len(matchers)-1),
 	}
 
 	for _, m := range matchers {
@@ -48,36 +47,36 @@ func QueryParamFrom(matchers []*labels.Matcher) (QueryParam, error) {
 			param.Field = m.Value
 		default:
 			filterParam := []string{m.Value}
-			var filterType ceresdbproto.FilterType
+			var filterType ceresprompb.FilterType
 
 			switch m.Type {
 			case labels.MatchEqual:
-				filterType = ceresdbproto.FilterType_LITERAL_OR
+				filterType = ceresprompb.FilterType_LITERAL_OR
 			case labels.MatchNotEqual:
-				filterType = ceresdbproto.FilterType_NOT_LITERAL_OR
+				filterType = ceresprompb.FilterType_NOT_LITERAL_OR
 			case labels.MatchRegexp:
 				if literals, ok := parseLiteralOrRegularExpr(m.Value); ok {
 					filterParam = literals
-					filterType = ceresdbproto.FilterType_LITERAL_OR
+					filterType = ceresprompb.FilterType_LITERAL_OR
 				} else {
 					filterParam = []string{"^(?:" + m.Value + ")$"}
-					filterType = ceresdbproto.FilterType_REGEXP
+					filterType = ceresprompb.FilterType_REGEXP
 				}
 			case labels.MatchNotRegexp:
 				if literals, ok := parseLiteralOrRegularExpr(m.Value); ok {
 					filterParam = literals
-					filterType = ceresdbproto.FilterType_NOT_LITERAL_OR
+					filterType = ceresprompb.FilterType_NOT_LITERAL_OR
 				} else {
 					filterParam = []string{"^(?:" + m.Value + ")$"}
-					filterType = ceresdbproto.FilterType_NOT_REGEXP_MATCH
+					filterType = ceresprompb.FilterType_NOT_REGEXP_MATCH
 				}
 			default:
 				return param, fmt.Errorf("unknown match type %s", m.Type)
 			}
 
-			param.Filters = append(param.Filters, &ceresdbproto.Filter{
+			param.Filters = append(param.Filters, &ceresprompb.Filter{
 				TagKey: m.Name,
-				Operators: []*ceresdbproto.FilterOperator{
+				Operators: []*ceresprompb.FilterOperator{
 					{
 						FilterType: filterType,
 						Params:     filterParam,

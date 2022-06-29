@@ -6,8 +6,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/CeresDB/ceresdbproto/go/ceresdbproto"
-
+	"github.com/CeresDB/ceresdbproto/pkg/ceresprompb"
 	"github.com/prometheus/prometheus/model/labels"
 	"github.com/prometheus/prometheus/storage"
 )
@@ -80,7 +79,7 @@ func (q *Querier) querySeries(hints *storage.SelectHints, matchers []*labels.Mat
 	ctx, cancel := context.WithTimeout(q.ctx, GrpcTimeout)
 	defer cancel()
 
-	req := &ceresdbproto.PrometheusQueryRequest{
+	req := &ceresprompb.PrometheusQueryRequest{
 		Expr: hints.PushdownExpr,
 	}
 	resp, err := q.client.PromQuery(ctx, req)

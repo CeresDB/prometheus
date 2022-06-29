@@ -8,7 +8,7 @@ require (
 	github.com/Azure/go-autorest/autorest/adal v0.9.17
 	github.com/Azure/go-autorest/autorest/to v0.4.0 // indirect
 	github.com/Azure/go-autorest/autorest/validation v0.3.1 // indirect
-	github.com/CeresDB/ceresdbproto/go/ceresdbproto v0.0.0-20220531034131-a7db8811a949
+	github.com/CeresDB/ceresdbproto v0.0.0-20220628102323-cbfd0135a531
 	github.com/alecthomas/units v0.0.0-20210927113745-59d0afb8317a
 	github.com/aws/aws-sdk-go v1.42.16
 	github.com/cespare/xxhash/v2 v2.1.2
@@ -19,7 +19,7 @@ require (
 	github.com/docker/docker v20.10.11+incompatible
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0
-	github.com/envoyproxy/go-control-plane v0.10.1
+	github.com/envoyproxy/go-control-plane v0.10.2-0.20220325020618-49ff273808a1
 	github.com/envoyproxy/protoc-gen-validate v0.6.2
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/go-kit/log v0.2.0
@@ -68,8 +68,8 @@ require (
 	golang.org/x/tools v0.1.7
 	google.golang.org/api v0.60.0
 	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5
-	google.golang.org/grpc v1.43.0
-	google.golang.org/protobuf v1.27.1
+	google.golang.org/grpc v1.47.0
+	google.golang.org/protobuf v1.28.0
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b

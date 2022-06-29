@@ -1,13 +1,13 @@
 package ceresdb
 
 import (
-	"github.com/CeresDB/ceresdbproto/go/ceresdbproto"
+	"github.com/CeresDB/ceresdbproto/pkg/storagepb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Client struct {
-	ceresdbproto.StorageServiceClient
+	storagepb.StorageServiceClient
 	conn *grpc.ClientConn
 }
 
@@ -22,7 +22,7 @@ func NewClient(addr string) (*Client, error) {
 		return nil, err
 	}
 
-	c := ceresdbproto.NewStorageServiceClient(conn)
+	c := storagepb.NewStorageServiceClient(conn)
 
 	return &Client{
 		StorageServiceClient: c,
